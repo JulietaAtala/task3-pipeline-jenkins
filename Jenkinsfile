@@ -7,13 +7,11 @@ pipeline {
   }
 
   environment {
-    // nombre EXACTO de Node en Manage Jenkins > Global Tool Configuration
     NODE_TOOL = 'node'
     IMG_TAG   = 'v1.0'
   }
 
   tools {
-    // Declarative tools en Windows: pon el nombre literal
     nodejs 'node'
   }
 
@@ -52,21 +50,18 @@ pipeline {
 
     stage('Build') {
       steps {
-        // en Windows, usá bat/powershell para NPM
         bat 'call npm ci || call npm install'
       }
     }
 
     stage('Test') {
       steps {
-        // que no quede en modo watch y no haga fallar el pipeline mientras montas todo
         bat 'set CI=true && call npm test --watchAll=false || exit /b 0'
       }
     }
 
     stage('Build Docker image') {
       steps {
-        // Docker Desktop en Windows debe estar instalado y en PATH
         powershell """
           docker version
           docker build --build-arg APP_PORT=3000 -t ${env.IMG_NAME}:${env.IMG_TAG} .
@@ -76,7 +71,6 @@ pipeline {
 
     stage('Deploy') {
       steps {
-        // PowerShell para parar/eliminar solo el contenedor del entorno actual y levantarlo
         powershell """
           \$ct = '${env.CT_NAME}'
 
